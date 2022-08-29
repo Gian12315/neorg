@@ -200,6 +200,14 @@ module.private = {
             return handle
         end
 
+        -- Gets the title from the metadata of a file, must be called in a vim.schedule
+        local get_title = function(file)
+            local buffer = vim.fn.bufadd(folder_name .. neorg.configuration.pathsep .. file)
+            local meta = module.required["core.integrations.treesitter"].get_document_metadata(buffer)
+            local title = meta["title"]
+            return title
+        end
+
         vim.loop.fs_scandir(folder_name .. neorg.configuration.pathsep, function(err, handle)
             while true do
                 -- Name corresponds to either a YYYY-mm-dd.norg file, or just the year ("nested" strategy)
@@ -232,11 +240,13 @@ module.private = {
 
                                 -- If it's a .norg file, also ensure it is a day entry
                                 if dtype == "file" and string.match(dname, "%d%d%.norg") then
-                                    -- Split the file name (Should be dd.norg)
+                                    -- Split the file name
                                     local file = vim.split(dname, ".", { plain = true })
 
-                                    -- Until a solution for getting the metadata is found, the title will always be the day
-                                    local title = file[1]
+                                    vim.schedule(function ()
+                                        
+                                    -- Get the title from the metadata, else, it just defaults to the name of the file
+                                    local title = get_title(name .. neorg.configuration.pathsep .. mname .. neorg.configuration.pathsep .. dname) or file[1]
 
                                     -- Insert a new entry
                                     table.insert(entries, {
@@ -255,6 +265,7 @@ module.private = {
                                             .. ":}",
                                         title,
                                     })
+                                    end)
                                 end
                             end
                         end
@@ -275,8 +286,10 @@ module.private = {
                         parts[k] = tonumber(v)
                     end
 
-                    -- Until a solution for getting the metadata is found, the title will always be the day
-                    local title = parts[3]
+                        
+                    vim.schedule(function ()
+                    -- Get the title from the metadata, else, it just defaults to the name of the file
+                    local title = get_title(name) or parts[3]
 
                     -- And insert a new entry that corresponds to the file
                     table.insert(entries, {
@@ -291,6 +304,7 @@ module.private = {
                             .. ":}",
                         title,
                     })
+                    end)
                 end
             end
 
@@ -365,7 +379,7 @@ module.config.public = {
     use_template = true,
 
     -- formatter function used to generate the toc file
-    -- receives a table that contains tables like { yy, mm, dd, link, title}
+    -- receives a table that contains tables like { yy, mm, dd, link, title }
     -- must return a table of strings
     toc_format = nil,
 }
