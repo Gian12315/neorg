@@ -243,28 +243,33 @@ module.private = {
                                     -- Split the file name
                                     local file = vim.split(dname, ".", { plain = true })
 
-                                    vim.schedule(function ()
-                                        
-                                    -- Get the title from the metadata, else, it just defaults to the name of the file
-                                    local title = get_title(name .. neorg.configuration.pathsep .. mname .. neorg.configuration.pathsep .. dname) or file[1]
+                                    vim.schedule(function()
+                                        -- Get the title from the metadata, else, it just defaults to the name of the file
+                                        local title = get_title(
+                                            name
+                                                .. neorg.configuration.pathsep
+                                                .. mname
+                                                .. neorg.configuration.pathsep
+                                                .. dname
+                                        ) or file[1]
 
-                                    -- Insert a new entry
-                                    table.insert(entries, {
-                                        tonumber(name),
-                                        tonumber(mname),
-                                        tonumber(file[1]),
-                                        "{:$"
-                                            .. neorg.configuration.pathsep
-                                            .. module.config.public.journal_folder
-                                            .. neorg.configuration.pathsep
-                                            .. name
-                                            .. neorg.configuration.pathsep
-                                            .. mname
-                                            .. neorg.configuration.pathsep
-                                            .. file[1]
-                                            .. ":}",
-                                        title,
-                                    })
+                                        -- Insert a new entry
+                                        table.insert(entries, {
+                                            tonumber(name),
+                                            tonumber(mname),
+                                            tonumber(file[1]),
+                                            "{:$"
+                                                .. neorg.configuration.pathsep
+                                                .. module.config.public.journal_folder
+                                                .. neorg.configuration.pathsep
+                                                .. name
+                                                .. neorg.configuration.pathsep
+                                                .. mname
+                                                .. neorg.configuration.pathsep
+                                                .. file[1]
+                                                .. ":}",
+                                            title,
+                                        })
                                     end)
                                 end
                             end
@@ -286,24 +291,23 @@ module.private = {
                         parts[k] = tonumber(v)
                     end
 
-                        
-                    vim.schedule(function ()
-                    -- Get the title from the metadata, else, it just defaults to the name of the file
-                    local title = get_title(name) or parts[3]
+                    vim.schedule(function()
+                        -- Get the title from the metadata, else, it just defaults to the name of the file
+                        local title = get_title(name) or parts[3]
 
-                    -- And insert a new entry that corresponds to the file
-                    table.insert(entries, {
-                        parts[1],
-                        parts[2],
-                        parts[3],
-                        "{:$"
-                            .. neorg.configuration.pathsep
-                            .. module.config.public.journal_folder
-                            .. neorg.configuration.pathsep
-                            .. file[1]
-                            .. ":}",
-                        title,
-                    })
+                        -- And insert a new entry that corresponds to the file
+                        table.insert(entries, {
+                            parts[1],
+                            parts[2],
+                            parts[3],
+                            "{:$"
+                                .. neorg.configuration.pathsep
+                                .. module.config.public.journal_folder
+                                .. neorg.configuration.pathsep
+                                .. file[1]
+                                .. ":}",
+                            title,
+                        })
                     end)
                 end
             end
